@@ -19,5 +19,5 @@ make -f Makefile
 Example:
 run FETCH with the example by following command:
 
-./dyninstBB\_extent ../example/readelf.strip x64 ../output/readelf.pb
+./dyninstBB\_extent ../example/readelf.strip x64 output\_file
 
