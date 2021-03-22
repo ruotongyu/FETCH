@@ -1,0 +1,4 @@
+/home/binpang/.virtualenvs/angr/lib/python3.7/site-packages/pysmt/walkers/generic.py:43: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3,and in 3.9 it will stop working
+  if len(nodetypes) == 1 and isinstance(nodetypes[0], collections.Iterable):
+/home/binpang/.virtualenvs/angr/lib/python3.7/site-packages/pysmt/walkers/generic.py:43: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3,and in 3.9 it will stop working
+  if len(nodetypes) == 1 and isinstance(nodetypes[0], collections.Iterable):

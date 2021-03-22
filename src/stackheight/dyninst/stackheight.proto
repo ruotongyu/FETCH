@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package stackheight;
+
+message Height{
+  int64 address = 1;
+  int64 height = 2;
+}
+message StackHeights{
+  repeated Height heights = 1;
+}
+

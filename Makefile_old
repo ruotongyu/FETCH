@@ -1,0 +1,20 @@
+all: dyninstBB dyninstBBNoFuncMatching dyninstBB_ehframe dyninstNoTailcall
+
+dyninstNoTailcall: dyninstBB.cpp blocks.pb.cc
+	c++ -O2 -std=c++11 -L/usr/local/lib -o dyninstNoTailcall dyninstBB.cpp blocks.pb.cc -ldyninstAPI -lparseAPI -linstructionAPI -lsymtabAPI -lglog -lgflags -lprotobuf -lboost_system -lpthread
+
+dyninstBB_ehframe: dyninstBB_ehframe.cpp blocks.pb.cc
+	c++ -O2 -std=c++11 -L/usr/local/lib -o dyninstBB_ehframe dyninstBB_ehframe.cpp blocks.pb.cc -ldyninstAPI -lparseAPI -linstructionAPI -lsymtabAPI -lglog -lgflags -lprotobuf -lboost_system -lpthread
+
+dyninstBB: dyninstBB.cpp blocks.pb.cc
+	c++ -O2 -std=c++11 -L/usr/local/lib -o dyninstBB dyninstBB.cpp blocks.pb.cc -ldyninstAPI -lparseAPI -linstructionAPI -lsymtabAPI -lglog -lgflags -lprotobuf -lboost_system -lpthread
+	
+
+dyninstBBNoFuncMatching: dyninstBBNoFuncMatching.cpp blocks.pb.cc
+	c++ -O2 -std=c++11 -L/usr/local/lib -o dyninstBBNoFuncMatching dyninstBBNoFuncMatching.cpp blocks.pb.cc -ldyninstAPI -lparseAPI -linstructionAPI -lsymtabAPI -lglog -lgflags -lprotobuf -lboost_system -lpthread
+
+dyninstRef: dyninstRef.cpp
+	c++ -O2 -std=c++11 -L/usr/local/lib -o dyninstRef dyninstRef.cpp -ldyninstAPI -lparseAPI -linstructionAPI -lsymtabAPI -lglog -lgflags -lprotobuf -lboost_system
+
+clean:
+	rm dyninstBB dyninstBBNoFuncMatching dyninstBB_ehframe dyninstNoTailcall
