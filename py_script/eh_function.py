@@ -16,6 +16,7 @@ def func_addr(mModule):
     func_set = set()
     for func in mModule.fuc:
         func_set.add(func.va)
+        print("Function Addr:", hex(func.va))
     return func_set
 
 def tar_addr(refInf):
@@ -112,7 +113,7 @@ def compare_func():
 if __name__ == "__main__":
     options = parse_argument()
     path = options.input
-    f = open("/tmp/pbTest.pb", "rb")
+    f = open("/tmp/tmp.pb", "rb")
     mModule = blocks_pb2.module()
     mModule.ParseFromString(f.read())
     fuc_set = func_addr(mModule)
