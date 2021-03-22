@@ -10,3 +10,14 @@ Dependency:
 
 2) 
 
+
+Build FETCH with following command:
+
+make -f Makefile
+
+
+Example:
+run FETCH with the example by following command:
+
+./dyninstBB\_extent ../example/readelf.strip x64 ../output/readelf.pb
+
