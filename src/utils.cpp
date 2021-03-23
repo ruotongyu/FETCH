@@ -13,7 +13,6 @@
 #include <iostream>
 #include <capstone/capstone.h>
 #include <Dereference.h>
-#include "protobuf/refInf.pb.h"
 #include "protobuf/blocks.pb.h"
 
 // for liveness analysis

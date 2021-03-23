@@ -1,4 +1,4 @@
-all: dyninstBB_extent
+all: FETCH
 
 CXXFLAGS=-O2 -std=c++11
 CXX=g++
@@ -14,5 +14,8 @@ livenessAnaEhframe.o: livenessAnaEhframe.cc
 EhframeParser.o: stackheight/ehframe/EhframeParser.cc
 	$(CXX) -c -o $@ $^
 
-dyninstBB_extent: dyninstBB_extent.cpp protobuf/blocks.pb.cc protobuf/refInf.pb.cc utils.cpp loadInfo.cpp Reference.cpp livenessAnaEhframe.o InstructionCache.o EhframeParser.o tailcall/tailcall.cc
+FETCH: FETCH.cpp protobuf/blocks.pb.cc utils.cpp loadInfo.cpp Reference.cpp livenessAnaEhframe.o InstructionCache.o EhframeParser.o tailcall/tailcall.cc
 	g++ $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+
+clean:
+	rm -f *.o FETCH

@@ -207,10 +207,8 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _weak_field_map_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::blocks::Instruction, va_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::blocks::Instruction, size_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::blocks::Instruction, call_type_),
   0,
   1,
-  2,
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::blocks::BasicBlock, _has_bits_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::blocks::BasicBlock, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -223,7 +221,6 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::blocks::BasicBlock, size_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::blocks::BasicBlock, padding_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::blocks::BasicBlock, type_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::blocks::BasicBlock, terminate_),
   0,
   1,
   ~0u,
@@ -231,15 +228,14 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   2,
   3,
   4,
-  5,
 };
 static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
   { 0, 9, sizeof(::blocks::module)},
   { 13, 22, sizeof(::blocks::Function)},
   { 26, 32, sizeof(::blocks::CalledFunction)},
   { 33, 39, sizeof(::blocks::Child)},
-  { 40, 48, sizeof(::blocks::Instruction)},
-  { 51, 64, sizeof(::blocks::BasicBlock)},
+  { 40, 47, sizeof(::blocks::Instruction)},
+  { 49, 61, sizeof(::blocks::BasicBlock)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -279,17 +275,16 @@ void AddDescriptorsImpl() {
       "\036\n\002bb\030\002 \003(\0132\022.blocks.BasicBlock\022.\n\016calle"
       "dFunction\030\003 \003(\0132\026.blocks.CalledFunction\022"
       "\017\n\004type\030\004 \001(\r:\0010\"\034\n\016CalledFunction\022\n\n\002va"
-      "\030\001 \002(\004\"\023\n\005Child\022\n\n\002va\030\001 \002(\004\"@\n\013Instructi"
-      "on\022\n\n\002va\030\001 \002(\004\022\017\n\004size\030\002 \001(\r:\0010\022\024\n\tcall_"
-      "type\030\003 \001(\r:\0010\"\301\001\n\nBasicBlock\022\n\n\002va\030\001 \002(\004"
-      "\022\016\n\006parent\030\002 \002(\004\022\034\n\005child\030\003 \003(\0132\r.blocks"
-      ".Child\022)\n\014instructions\030\004 \003(\0132\023.blocks.In"
-      "struction\022\017\n\004size\030\005 \001(\r:\0010\022\022\n\007padding\030\006 "
-      "\001(\r:\0010\022\017\n\004type\030\007 \001(\r:\0010\022\030\n\tterminate\030\010 \001"
-      "(\010:\005false"
+      "\030\001 \002(\004\"\023\n\005Child\022\n\n\002va\030\001 \002(\004\"*\n\013Instructi"
+      "on\022\n\n\002va\030\001 \002(\004\022\017\n\004size\030\002 \001(\r:\0010\"\247\001\n\nBasi"
+      "cBlock\022\n\n\002va\030\001 \002(\004\022\016\n\006parent\030\002 \002(\004\022\034\n\005ch"
+      "ild\030\003 \003(\0132\r.blocks.Child\022)\n\014instructions"
+      "\030\004 \003(\0132\023.blocks.Instruction\022\017\n\004size\030\005 \001("
+      "\r:\0010\022\022\n\007padding\030\006 \001(\r:\0010\022\017\n\004type\030\007 \001(\r:\001"
+      "0"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 569);
+      descriptor, 521);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "blocks.proto", &protobuf_RegisterTypes);
 }
@@ -1498,7 +1493,6 @@ void Instruction::InitAsDefaultInstance() {
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int Instruction::kVaFieldNumber;
 const int Instruction::kSizeFieldNumber;
-const int Instruction::kCallTypeFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 Instruction::Instruction()
@@ -1514,15 +1508,15 @@ Instruction::Instruction(const Instruction& from)
       _has_bits_(from._has_bits_) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::memcpy(&va_, &from.va_,
-    static_cast<size_t>(reinterpret_cast<char*>(&call_type_) -
-    reinterpret_cast<char*>(&va_)) + sizeof(call_type_));
+    static_cast<size_t>(reinterpret_cast<char*>(&size_) -
+    reinterpret_cast<char*>(&va_)) + sizeof(size_));
   // @@protoc_insertion_point(copy_constructor:blocks.Instruction)
 }
 
 void Instruction::SharedCtor() {
   ::memset(&va_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&call_type_) -
-      reinterpret_cast<char*>(&va_)) + sizeof(call_type_));
+      reinterpret_cast<char*>(&size_) -
+      reinterpret_cast<char*>(&va_)) + sizeof(size_));
 }
 
 Instruction::~Instruction() {
@@ -1554,10 +1548,10 @@ void Instruction::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _has_bits_[0];
-  if (cached_has_bits & 7u) {
+  if (cached_has_bits & 3u) {
     ::memset(&va_, 0, static_cast<size_t>(
-        reinterpret_cast<char*>(&call_type_) -
-        reinterpret_cast<char*>(&va_)) + sizeof(call_type_));
+        reinterpret_cast<char*>(&size_) -
+        reinterpret_cast<char*>(&va_)) + sizeof(size_));
   }
   _has_bits_.Clear();
   _internal_metadata_.Clear();
@@ -1601,20 +1595,6 @@ bool Instruction::MergePartialFromCodedStream(
         break;
       }
 
-      // optional uint32 call_type = 3 [default = 0];
-      case 3: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(24u /* 24 & 0xFF */)) {
-          set_has_call_type();
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
-                 input, &call_type_)));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
       default: {
       handle_unusual:
         if (tag == 0) {
@@ -1652,11 +1632,6 @@ void Instruction::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->size(), output);
   }
 
-  // optional uint32 call_type = 3 [default = 0];
-  if (cached_has_bits & 0x00000004u) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(3, this->call_type(), output);
-  }
-
   if (_internal_metadata_.have_unknown_fields()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         _internal_metadata_.unknown_fields(), output);
@@ -1682,11 +1657,6 @@ void Instruction::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->size(), target);
   }
 
-  // optional uint32 call_type = 3 [default = 0];
-  if (cached_has_bits & 0x00000004u) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(3, this->call_type(), target);
-  }
-
   if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields(), target);
@@ -1710,22 +1680,13 @@ size_t Instruction::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormatLite::UInt64Size(
         this->va());
   }
-  if (_has_bits_[0 / 32] & 6u) {
-    // optional uint32 size = 2 [default = 0];
-    if (has_size()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::UInt32Size(
-          this->size());
-    }
-
-    // optional uint32 call_type = 3 [default = 0];
-    if (has_call_type()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::UInt32Size(
-          this->call_type());
-    }
-
+  // optional uint32 size = 2 [default = 0];
+  if (has_size()) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+        this->size());
   }
+
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
@@ -1754,15 +1715,12 @@ void Instruction::MergeFrom(const Instruction& from) {
   (void) cached_has_bits;
 
   cached_has_bits = from._has_bits_[0];
-  if (cached_has_bits & 7u) {
+  if (cached_has_bits & 3u) {
     if (cached_has_bits & 0x00000001u) {
       va_ = from.va_;
     }
     if (cached_has_bits & 0x00000002u) {
       size_ = from.size_;
-    }
-    if (cached_has_bits & 0x00000004u) {
-      call_type_ = from.call_type_;
     }
     _has_bits_[0] |= cached_has_bits;
   }
@@ -1795,7 +1753,6 @@ void Instruction::InternalSwap(Instruction* other) {
   using std::swap;
   swap(va_, other->va_);
   swap(size_, other->size_);
-  swap(call_type_, other->call_type_);
   swap(_has_bits_[0], other->_has_bits_[0]);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
@@ -1818,7 +1775,6 @@ const int BasicBlock::kInstructionsFieldNumber;
 const int BasicBlock::kSizeFieldNumber;
 const int BasicBlock::kPaddingFieldNumber;
 const int BasicBlock::kTypeFieldNumber;
-const int BasicBlock::kTerminateFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 BasicBlock::BasicBlock()
@@ -1836,15 +1792,15 @@ BasicBlock::BasicBlock(const BasicBlock& from)
       instructions_(from.instructions_) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::memcpy(&va_, &from.va_,
-    static_cast<size_t>(reinterpret_cast<char*>(&terminate_) -
-    reinterpret_cast<char*>(&va_)) + sizeof(terminate_));
+    static_cast<size_t>(reinterpret_cast<char*>(&type_) -
+    reinterpret_cast<char*>(&va_)) + sizeof(type_));
   // @@protoc_insertion_point(copy_constructor:blocks.BasicBlock)
 }
 
 void BasicBlock::SharedCtor() {
   ::memset(&va_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&terminate_) -
-      reinterpret_cast<char*>(&va_)) + sizeof(terminate_));
+      reinterpret_cast<char*>(&type_) -
+      reinterpret_cast<char*>(&va_)) + sizeof(type_));
 }
 
 BasicBlock::~BasicBlock() {
@@ -1878,10 +1834,10 @@ void BasicBlock::Clear() {
   child_.Clear();
   instructions_.Clear();
   cached_has_bits = _has_bits_[0];
-  if (cached_has_bits & 63u) {
+  if (cached_has_bits & 31u) {
     ::memset(&va_, 0, static_cast<size_t>(
-        reinterpret_cast<char*>(&terminate_) -
-        reinterpret_cast<char*>(&va_)) + sizeof(terminate_));
+        reinterpret_cast<char*>(&type_) -
+        reinterpret_cast<char*>(&va_)) + sizeof(type_));
   }
   _has_bits_.Clear();
   _internal_metadata_.Clear();
@@ -1991,20 +1947,6 @@ bool BasicBlock::MergePartialFromCodedStream(
         break;
       }
 
-      // optional bool terminate = 8 [default = false];
-      case 8: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(64u /* 64 & 0xFF */)) {
-          set_has_terminate();
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
-                 input, &terminate_)));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
       default: {
       handle_unusual:
         if (tag == 0) {
@@ -2075,11 +2017,6 @@ void BasicBlock::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(7, this->type(), output);
   }
 
-  // optional bool terminate = 8 [default = false];
-  if (cached_has_bits & 0x00000020u) {
-    ::google::protobuf::internal::WireFormatLite::WriteBool(8, this->terminate(), output);
-  }
-
   if (_internal_metadata_.have_unknown_fields()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         _internal_metadata_.unknown_fields(), output);
@@ -2134,11 +2071,6 @@ void BasicBlock::SerializeWithCachedSizes(
   // optional uint32 type = 7 [default = 0];
   if (cached_has_bits & 0x00000010u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(7, this->type(), target);
-  }
-
-  // optional bool terminate = 8 [default = false];
-  if (cached_has_bits & 0x00000020u) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(8, this->terminate(), target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -2214,7 +2146,7 @@ size_t BasicBlock::ByteSizeLong() const {
     }
   }
 
-  if (_has_bits_[0 / 32] & 60u) {
+  if (_has_bits_[0 / 32] & 28u) {
     // optional uint32 size = 5 [default = 0];
     if (has_size()) {
       total_size += 1 +
@@ -2234,11 +2166,6 @@ size_t BasicBlock::ByteSizeLong() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::UInt32Size(
           this->type());
-    }
-
-    // optional bool terminate = 8 [default = false];
-    if (has_terminate()) {
-      total_size += 1 + 1;
     }
 
   }
@@ -2272,7 +2199,7 @@ void BasicBlock::MergeFrom(const BasicBlock& from) {
   child_.MergeFrom(from.child_);
   instructions_.MergeFrom(from.instructions_);
   cached_has_bits = from._has_bits_[0];
-  if (cached_has_bits & 63u) {
+  if (cached_has_bits & 31u) {
     if (cached_has_bits & 0x00000001u) {
       va_ = from.va_;
     }
@@ -2287,9 +2214,6 @@ void BasicBlock::MergeFrom(const BasicBlock& from) {
     }
     if (cached_has_bits & 0x00000010u) {
       type_ = from.type_;
-    }
-    if (cached_has_bits & 0x00000020u) {
-      terminate_ = from.terminate_;
     }
     _has_bits_[0] |= cached_has_bits;
   }
@@ -2329,7 +2253,6 @@ void BasicBlock::InternalSwap(BasicBlock* other) {
   swap(size_, other->size_);
   swap(padding_, other->padding_);
   swap(type_, other->type_);
-  swap(terminate_, other->terminate_);
   swap(_has_bits_[0], other->_has_bits_[0]);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }

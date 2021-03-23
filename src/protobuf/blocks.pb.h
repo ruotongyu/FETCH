@@ -712,28 +712,18 @@ class Instruction : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::google::protobuf::uint32 size() const;
   void set_size(::google::protobuf::uint32 value);
 
-  // optional uint32 call_type = 3 [default = 0];
-  bool has_call_type() const;
-  void clear_call_type();
-  static const int kCallTypeFieldNumber = 3;
-  ::google::protobuf::uint32 call_type() const;
-  void set_call_type(::google::protobuf::uint32 value);
-
   // @@protoc_insertion_point(class_scope:blocks.Instruction)
  private:
   void set_has_va();
   void clear_has_va();
   void set_has_size();
   void clear_has_size();
-  void set_has_call_type();
-  void clear_has_call_type();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::HasBits<1> _has_bits_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   ::google::protobuf::uint64 va_;
   ::google::protobuf::uint32 size_;
-  ::google::protobuf::uint32 call_type_;
   friend struct ::protobuf_blocks_2eproto::TableStruct;
 };
 // -------------------------------------------------------------------
@@ -891,13 +881,6 @@ class BasicBlock : public ::google::protobuf::Message /* @@protoc_insertion_poin
   ::google::protobuf::uint32 type() const;
   void set_type(::google::protobuf::uint32 value);
 
-  // optional bool terminate = 8 [default = false];
-  bool has_terminate() const;
-  void clear_terminate();
-  static const int kTerminateFieldNumber = 8;
-  bool terminate() const;
-  void set_terminate(bool value);
-
   // @@protoc_insertion_point(class_scope:blocks.BasicBlock)
  private:
   void set_has_va();
@@ -910,8 +893,6 @@ class BasicBlock : public ::google::protobuf::Message /* @@protoc_insertion_poin
   void clear_has_padding();
   void set_has_type();
   void clear_has_type();
-  void set_has_terminate();
-  void clear_has_terminate();
 
   // helper for ByteSizeLong()
   size_t RequiredFieldsByteSizeFallback() const;
@@ -926,7 +907,6 @@ class BasicBlock : public ::google::protobuf::Message /* @@protoc_insertion_poin
   ::google::protobuf::uint32 size_;
   ::google::protobuf::uint32 padding_;
   ::google::protobuf::uint32 type_;
-  bool terminate_;
   friend struct ::protobuf_blocks_2eproto::TableStruct;
 };
 // ===================================================================
@@ -1262,30 +1242,6 @@ inline void Instruction::set_size(::google::protobuf::uint32 value) {
   // @@protoc_insertion_point(field_set:blocks.Instruction.size)
 }
 
-// optional uint32 call_type = 3 [default = 0];
-inline bool Instruction::has_call_type() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
-}
-inline void Instruction::set_has_call_type() {
-  _has_bits_[0] |= 0x00000004u;
-}
-inline void Instruction::clear_has_call_type() {
-  _has_bits_[0] &= ~0x00000004u;
-}
-inline void Instruction::clear_call_type() {
-  call_type_ = 0u;
-  clear_has_call_type();
-}
-inline ::google::protobuf::uint32 Instruction::call_type() const {
-  // @@protoc_insertion_point(field_get:blocks.Instruction.call_type)
-  return call_type_;
-}
-inline void Instruction::set_call_type(::google::protobuf::uint32 value) {
-  set_has_call_type();
-  call_type_ = value;
-  // @@protoc_insertion_point(field_set:blocks.Instruction.call_type)
-}
-
 // -------------------------------------------------------------------
 
 // BasicBlock
@@ -1468,30 +1424,6 @@ inline void BasicBlock::set_type(::google::protobuf::uint32 value) {
   set_has_type();
   type_ = value;
   // @@protoc_insertion_point(field_set:blocks.BasicBlock.type)
-}
-
-// optional bool terminate = 8 [default = false];
-inline bool BasicBlock::has_terminate() const {
-  return (_has_bits_[0] & 0x00000020u) != 0;
-}
-inline void BasicBlock::set_has_terminate() {
-  _has_bits_[0] |= 0x00000020u;
-}
-inline void BasicBlock::clear_has_terminate() {
-  _has_bits_[0] &= ~0x00000020u;
-}
-inline void BasicBlock::clear_terminate() {
-  terminate_ = false;
-  clear_has_terminate();
-}
-inline bool BasicBlock::terminate() const {
-  // @@protoc_insertion_point(field_get:blocks.BasicBlock.terminate)
-  return terminate_;
-}
-inline void BasicBlock::set_terminate(bool value) {
-  set_has_terminate();
-  terminate_ = value;
-  // @@protoc_insertion_point(field_set:blocks.BasicBlock.terminate)
 }
 
 #ifdef __GNUC__

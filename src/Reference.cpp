@@ -17,7 +17,6 @@
 #include <Dereference.h>
 #include <InstructionAST.h>
 #include <Result.h>
-#include "protobuf/refInf.pb.h"
 #include "protobuf/blocks.pb.h"
 #include "utils.h"
 #include "loadInfo.h"

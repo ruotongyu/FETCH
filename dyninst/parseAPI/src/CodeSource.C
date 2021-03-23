@@ -1,0 +1,436 @@
+/*
+ * Copyright (c) 1996-2011 Barton P. Miller
+ * 
+ * We provide the Paradyn Parallel Performance Tools (below
+ * described as "Paradyn") on an AS IS basis, and do not warrant its
+ * validity or performance.  We reserve the right to update, modify,
+ * or discontinue this software at any time.  We shall have no
+ * obligation to supply such updates or modifications or any other
+ * form of support to you.
+ * 
+ * By your use of Paradyn, you understand and agree that we (or any
+ * other person or entity with proprietary rights in Paradyn) are
+ * under no obligation to provide either maintenance services,
+ * update services, notices of latent defects, or correction of
+ * defects for Paradyn.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ */
+#include <vector>
+#include <map>
+#include <iostream>
+#include <boost/assign/list_of.hpp>
+
+#include "dyntypes.h"
+
+#include "CodeSource.h"
+#include "debug_parse.h"
+#include "util.h"
+
+#include "slicing.h"
+#include "CodeObject.h"
+#include "CFG.h"
+#include "dataflowAPI/h/Absloc.h"
+#include "dataflowAPI/h/AbslocInterface.h"
+#include "ConstantPred.h"
+#include "ConstantVisitor.h"
+
+using namespace std;
+using namespace Dyninst;
+using namespace Dyninst::ParseAPI;
+
+/** CodeSource **/
+void
+CodeSource::addRegion(CodeRegion * cr)
+{
+    _regions.push_back(cr);
+
+    // check for overlapping regions
+    if(!_regions_overlap) {
+        set<CodeRegion *> exist;
+        _region_tree.find(cr,exist);
+        if(!exist.empty()) {
+	    // for(auto i = exist.begin();
+	    // 	i != exist.end();
+	    // 	++i)
+	    // {
+	    // 	std::cerr << "Region " << **i << " overlaps " << *cr << std::endl;
+	    // }
+            _regions_overlap = true;
+	}
+    }
+
+    _region_tree.insert(cr);
+}
+
+int
+CodeSource::findRegions(Address addr, set<CodeRegion *> & ret) const
+{
+    return _region_tree.find(addr,ret);
+}
+
+dyn_hash_map<std::string, bool>
+CodeSource::non_returning_funcs =
+    boost::assign::map_list_of
+        // libc-2.31.so from glibc 2.31
+        ("_Exit", true)
+        ("__GI___assert_fail", true)
+        ("__GI___assert_perror_fail", true)
+        ("__GI___chk_fail", true)
+        ("__GI___fortify_fail", true)
+        ("__GI___libc_dynarray_at_failure", true)
+        ("__GI___libc_fatal", true)
+        ("__GI__dl_signal_error", true)
+        ("__GI__dl_signal_exception", true)
+        ("__GI__exit", true)
+        ("__GI_abort", true)
+        ("__GI_exit", true)
+        ("__GI_verr", true)
+        ("__GI_verrx", true)
+        ("__assert", true)
+        ("__assert_fail", true)
+        ("__assert_fail_base", true)
+        ("__assert_perror_fail", true)
+        ("__chk_fail", true)
+        ("__fortify_fail", true)
+        ("__libc_dynarray_at_failure", true)
+        ("__libc_fatal", true)
+        ("__libc_main", true)
+        ("__libc_siglongjmp", true)
+        ("__libc_start_main", true)
+        ("__run_exit_handlers", true)
+        ("__stack_chk_fail", true)
+        ("__stack_chk_fail_local", true)
+        ("_dl_signal_error", true)
+        ("_dl_signal_exception", true)
+        ("_dl_start", true)
+        ("_exit", true)
+        ("_longjmp", true)
+        ("abort", true)
+        ("err", true)
+        ("errx", true)
+        ("exit", true)
+        ("fatal_error", true)
+        ("longjmp", true)
+        ("mabort", true)
+        ("malloc_printerr", true)
+        ("print_and_abort", true)
+        ("siglongjmp", true)
+        ("svctcp_rendezvous_abort", true)
+        ("svcunix_rendezvous_abort", true)
+        ("verr", true)
+        ("verrx", true)
+
+        // libpthread-2.31.so from glibc 2.31
+        ("__GI___pthread_unwind", true)
+        ("__GI___pthread_unwind_next", true)
+        ("__nptl_main", true)
+        ("__pthread_exit", true)
+        ("__pthread_unwind", true)
+        ("__pthread_unwind_next", true)
+        ("longjmp_alias", true)
+        ("longjmp_compat", true)
+        ("pthread_exit", true)
+        ("siglongjmp_alias", true)
+        ("start_thread", true)
+        ("thrd_exit", true)
+
+        // libstdc++.so from gcc 9.3.0
+        ("_ZN10__cxxabiv111__terminateEPFvvE", true)
+        ("_ZN10__cxxabiv112__unexpectedEPFvvE", true)
+        ("_ZN9__gnu_cxx26__throw_insufficient_spaceEPKcS1_", true)
+        ("_ZNK11__gnu_debug16_Error_formatter8_M_errorEv", true)
+        ("_ZSt10unexpectedv", true)
+        ("_ZSt16__throw_bad_castv", true)
+        ("_ZSt17__throw_bad_allocv", true)
+        ("_ZSt17rethrow_exceptionNSt15__exception_ptr13exception_ptrE", true)
+        ("_ZSt18__throw_bad_typeidv", true)
+        ("_ZSt19__throw_ios_failurePKc", true)
+        ("_ZSt19__throw_ios_failurePKci", true)
+        ("_ZSt19__throw_logic_errorPKc", true)
+        ("_ZSt19__throw_range_errorPKc", true)
+        ("_ZSt20__throw_domain_errorPKc", true)
+        ("_ZSt20__throw_future_errori", true)
+        ("_ZSt20__throw_length_errorPKc", true)
+        ("_ZSt20__throw_out_of_rangePKc", true)
+        ("_ZSt20__throw_system_errori", true)
+        ("_ZSt21__throw_bad_exceptionv", true)
+        ("_ZSt21__throw_runtime_errorPKc", true)
+        ("_ZSt22__throw_overflow_errorPKc", true)
+        ("_ZSt23__throw_underflow_errorPKc", true)
+        ("_ZSt24__throw_invalid_argumentPKc", true)
+        ("_ZSt24__throw_out_of_range_fmtPKcz", true)
+        ("_ZSt25__throw_bad_function_callv", true)
+        ("_ZSt9terminatev", true)
+        ("__cxa_bad_cast", true)
+        ("__cxa_bad_typeid", true)
+        ("__cxa_call_unexpected", true)
+        ("__cxa_deleted_virtual", true)
+        ("__cxa_pure_virtual", true)
+        ("__cxa_rethrow", true)
+        ("__cxa_throw", true)
+        ("__cxa_throw_bad_array_new_length", true)
+
+        // libgfortran.so from gcc 9.3.0
+        ("_gfortran_error_stop_numeric", true)
+        ("_gfortran_error_stop_string", true)
+        ("_gfortran_os_error", true)
+        ("_gfortran_runtime_error", true)
+        ("_gfortran_runtime_error_at", true)
+        ("_gfortran_stop_numeric", true)
+        ("_gfortran_stop_string", true)
+        ("_gfortrani_exit_error", true)
+        ("_gfortrani_internal_error", true)
+        ("_gfortrani_os_error", true)
+        ("_gfortrani_runtime_error", true)
+        ("_gfortrani_runtime_error_at", true)
+        ("_gfortrani_sys_abort", true)
+
+        // libgomp.so from gcc 9.3.0
+        ("GOMP_PLUGIN_fatal", true)
+        ("gomp_fatal", true)
+        ("gomp_vfatal", true)
+
+        // old and misc functions
+        ("__error_at_line_noreturn", true)
+        ("__error_noreturn", true)
+        ("__longjmp_chk", true)
+        ("quick_exit", true)
+        ("__f90_stop", true)
+        ("fancy_abort", true)
+        ("ExitProcess", true)
+        ("_Unwind_Resume", true)
+        ("__longjmp", true)
+        ("_gfortran_abort", true)
+        ("_gfortran_exit_i8", true)
+        ("_gfortran_exit_i4", true)
+        ("for_stop_core", true)
+        ("__sys_exit", true)
+
+	// binpang,add
+	("_ZSt25__throw_bad_function_callv", true)
+	("pthread_exit", true)
+	("_ZSt20__throw_system_errori", true)
+	("_ZSt24__throw_out_of_range_fmtPKcz", true)
+	("_exit", true)
+	("__cxa_throw_bad_array_new_length", true)
+	("__cxa_bad_cast", true)
+	("_ZSt16__throw_bad_castv", true)
+	("__cxa_call_unexpected", true)
+	("__cxa_bad_typeid", true)
+	("_ZSt17__throw_bad_allocv", true)
+	("xexit", true)
+	("_bfd_abort", true)
+	("_Z8V8_FatalPKciS0_z", true)
+        ;
+
+bool CodeSource::isNonReturnForErrorFunc(Function* func, Block* blk){
+
+    conditional_nonreturn_printf("[isNoReturnForErrorFunc]: current function address is 0x%x, basic block address: 0x%x\n", func->addr(), blk->start());
+
+    Block::Insns ins_list;
+    blk->getInsns(ins_list);
+
+    AssignmentConverter ac(false, false);
+    std::vector<Assignment::Ptr> assignments;
+    Assignment::Ptr di_assign = nullptr;
+    // iterate over all instructions of basic block backward
+    for (auto rit = ins_list.rbegin(); rit != ins_list.rend(); rit++){
+	ac.convert(rit->second, rit->first, func, blk, assignments);
+
+	// get all the assignemts and check if the out assignemt is rdi(first argument) or not
+	for (auto ait = assignments.begin(); ait != assignments.end(); ait++){
+	    const AbsRegion &out = (*ait)->out();
+
+	    conditional_nonreturn_printf("[isNoReturnForErrorFunc]: current assignment is %s\n", (*ait)->format().c_str());
+
+	    if (out.absloc().type() == Absloc::Register){
+		auto reg = out.absloc().reg();
+		signed int category = (reg & 0x00ff0000);
+		signed int baseID =   (reg & 0x000000ff);
+		// got the rdi group registers
+		if (category == x86_64::GPR && baseID == x86_64::BASEDI){
+		    di_assign = *ait;
+		    break;
+		}
+	    }
+	}
+
+	if (di_assign){
+	    break;
+	}
+    }
+
+    if (di_assign){
+	// quick check. if the operator is mov
+	if (entryID::e_mov <= di_assign->insn().getOperation().getID() && 
+			di_assign->insn().getOperation().getID() <= entryID::e_movzx){
+	    conditional_nonreturn_printf("[isNoReturnForErrorFunc]: this is mov instruction\n");
+	    auto constant_operand = di_assign->insn().getOperand(1);
+
+	    if (auto imm = dynamic_cast<InstructionAPI::Immediate*>(constant_operand.getValue().get())){
+		auto value = imm->eval().convert<Address>();
+		if (value != 0){
+		    conditional_nonreturn_printf("[isNoReturnForErrorFunc]: find the rdi register, value is %d\n", value);
+		    return true;
+		} else {
+		    return false;
+		}
+	    }
+	} 
+
+	// quick check. if the operator is xor
+	if (di_assign->insn().getOperation().getID() == entryID::e_xor){
+	    // check if all input AbsRegion are rdi register
+	    bool all_di = false;
+	    for (auto assign_in : di_assign->inputs()){
+		all_di = false;
+		if (assign_in.absloc().type() == Absloc::Register){
+		    auto reg = assign_in.absloc().reg();
+		    signed int category = (reg & 0x00ff0000);
+		    signed int baseID =   (reg & 0x000000ff);
+		    // got the rdi group registers
+		    if (category == x86_64::GPR && baseID == x86_64::BASEDI){
+			all_di = true;
+		    }
+		}
+	    }
+
+	    if (all_di){
+		conditional_nonreturn_printf("[isNoReturnForErrorFunc]: this is `xor di di`, the di register is 0!\n");
+		return false;
+	    }
+	}
+	
+	// slice begin from di_assign
+	Slicer s(di_assign, blk, func, false, false);
+
+	ConstantPred mp;
+	mp.setSearchForControlFlowDep(true);
+
+	GraphPtr slice = s.backwardSlice(mp);
+
+	conditional_nonreturn_printf("[isNoReturnForErrorFunc]: find the rdi register: %s", di_assign->format().c_str());
+	Address value;
+
+	SymbolicExpression se;
+	se.cs = blk->obj()->cs();
+	se.cr = blk->region();
+
+	bool find_constant = ExpandSlice(slice, value, se);
+	// rdi is constant
+	if (find_constant && value){
+	    conditional_nonreturn_printf("[isNoReturnForErrorFunc]: rdi is a constant and non-zero, value is %d\n", value);
+	    return true;
+	}
+	else{
+	    return false;
+	}
+
+    } else {
+	bool value = true;
+	// backwards all precessors basic block
+	for (auto src_edge: blk->sources()){
+	    // don't follow the call instruction
+	    if (src_edge->type() == EdgeTypeEnum::CALL){
+		continue;
+	    }
+	    // we need make sure that rdi in all path are non-zero constant
+	    value &= isNonReturnForErrorFunc(func, src_edge->src());
+	}
+	return value;
+    }
+}
+
+bool CodeSource::conditionalNonReturnError(Function* func, Block* blk){
+    // support x86_64/linux for now
+    if (blk->obj()->cs()->getArch() != Arch_x86_64)
+	return false;
+    
+    // check the edge of basic block is call edge
+    ParseAPI::Edge* call_edge = nullptr;
+    for (auto trg_edge:  blk->targets()){
+	if (trg_edge->type() == EdgeTypeEnum::CALL){
+	    call_edge = trg_edge;
+	    break;
+	}
+    }
+
+    //CHECK(call_edge);
+
+    return isNonReturnForErrorFunc(func, blk);
+}
+
+bool
+CodeSource::conditionalNonReturning(string name, Function* func, Block* blk)
+{
+    if (blk->obj()->cs()->getArch() != Arch_x86_64)
+	return false;
+
+    auto iter = conditional_non_returning_funcs.find(name);
+    if (iter != conditional_non_returning_funcs.end()){
+	conditional_nonreturn_printf("Checking conditional non-returning for %s at 0x%x\n", 
+		name.c_str(), blk->last());
+	return iter->second(func, blk);
+    }
+    return false;
+}
+
+
+dyn_hash_map<std::string, bool(*)(Function*, Block*)>
+CodeSource::conditional_non_returning_funcs =
+    boost::assign::map_list_of
+        ("error_at_line", conditionalNonReturnError)
+        ("error", conditionalNonReturnError);
+dyn_hash_map<int, bool>
+CodeSource::non_returning_syscalls_x86 =
+    boost::assign::map_list_of
+        (1 /*exit*/,true)
+        (119 /*sigreturn*/, true);
+
+dyn_hash_map<int, bool>
+CodeSource::non_returning_syscalls_x86_64 =
+    boost::assign::map_list_of
+        (60 /*exit*/,true)
+        (15 /*sigreturn*/, true);
+
+bool
+CodeSource::nonReturning(string name)
+{
+#if defined(os_windows)
+	// We see MSVCR<N>.exit
+	// Of course, it's often reached via indirect call, but hope never fails.
+	if ((name.compare(0, strlen("MSVCR"), "MSVCR") == 0) &&
+		(name.find("exit") != name.npos)) return true;
+#endif
+	parsing_printf("Checking non-returning for %s\n", name.c_str());
+    return non_returning_funcs.find(name) != non_returning_funcs.end();
+}
+
+bool
+InstructionSource::isAligned(const Address addr) const
+{
+    switch (getArch()) {
+        case Arch_aarch64:
+	case Arch_ppc32:
+	case Arch_ppc64:
+	    return !(addr & 0x3);
+	case Arch_x86:
+	case Arch_x86_64:
+	    return true;
+	default:
+	    assert(!"unimplemented architecture");
+    }
+}
