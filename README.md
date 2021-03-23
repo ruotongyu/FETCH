@@ -21,17 +21,17 @@ FETCH is build on top of the Dyninst
    
    The build script is:
    ```
-sudo apt-get install autoconf automake libtool curl make g++ unzip
-git clone https://github.com/protocolbuffers/protobuf.git
-cd protobuf
-git submodule update --init --recursive
-./autogen.sh
+    sudo apt-get install autoconf automake libtool curl make g++ unzip
+    git clone https://github.com/protocolbuffers/protobuf.git
+    cd protobuf
+    git submodule update --init --recursive
+    ./autogen.sh
 
-./configure
-make
-make check
-sudo make install
-sudo ldconfig # refresh shared library cache.
+    ./configure
+    make
+    make check
+    sudo make install
+    sudo ldconfig # refresh shared library cache.
 ```
 
 4. [libdwarf](https://sourceforge.net/projects/libdwarf/)
@@ -47,13 +47,13 @@ sudo ldconfig # refresh shared library cache.
 5. Generate protobuf files.
 
    ```
-pushd $PWD
-cd src/proto
-protoc --cpp_out=. --proto_path=. blocks.proto
-popd
+   pushd $PWD
+   cd src/proto
+   protoc --cpp_out=. --proto_path=. blocks.proto
+   popd
 
-cd script
-protoc --python_out=. blocks.proto
+   cd script
+   protoc --python_out=. blocks.proto
    ```
 
 ## Build:
