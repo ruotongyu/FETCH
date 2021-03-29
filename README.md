@@ -1,5 +1,5 @@
-This is repository for FETCH. a fast and easy to use binary disassembing tool.
 
+This is repository for FETCH: A fast and easy-to-use tool to find function entries from x86/x64 System-V binaries (stripped or not).
 
 FETCH is build on top of the Dyninst
 
